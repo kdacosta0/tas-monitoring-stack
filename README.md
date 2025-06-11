@@ -32,7 +32,7 @@ make deploy
 This will check prerequisites deploy grafana (default namespace `trusted-artifact-signer`) and output its URL.  
 Default credentials: `admin / admin`  
 
-**Deploy to custom namespace:**:  
+**Deploy to custom namespace**:  
 ```bash  
 make deploy NAMESPACE=my-tas-namespace  
 ```  
