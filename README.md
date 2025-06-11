@@ -22,6 +22,7 @@ oc whoami
 - TSA  
 ```  
 
+
 ## Quick Start  
 
 ```bash  
@@ -33,6 +34,7 @@ This will check prerequisites deploy grafana (default namespace `trusted-artifac
 Default credentials: `admin / admin`  
 
 **Deploy to custom namespace**:  
+
 ```bash  
 make deploy NAMESPACE=my-tas-namespace  
 ```  
@@ -41,7 +43,6 @@ make deploy NAMESPACE=my-tas-namespace
 ```bash  
 make clean  
 ```  
-
 
 ## Architecture  
 
