@@ -29,7 +29,8 @@ git clone https://github.com/kdacosta0/tas-monitoring-stack.git
 cd tas-monitoring-stack  
 make deploy  
 ```  
-This will deploy grafana to default namespace - `trusted-artifact-signer`.  
+This will check prerequisites deploy grafana (default namespace `trusted-artifact-signer`) and output its URL.  
+Default credentials: `admin / admin`  
 
 **Deploy to custom namespace:**:  
 ```bash  
@@ -40,9 +41,6 @@ make deploy NAMESPACE=my-tas-namespace
 ```bash  
 make clean  
 ```  
-
-This will output the Grafana URL  
-Default credentials: `admin / admin`  
 
 
 ## Architecture  
