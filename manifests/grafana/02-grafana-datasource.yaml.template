@@ -1,0 +1,22 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: tas-prometheus
+  namespace: trusted-artifact-signer
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: tas-grafana
+  datasource:
+    name: prometheus
+    type: prometheus
+    access: proxy
+    url: https://prometheus-k8s.openshift-monitoring.svc.cluster.local:9091
+    basicAuth: false
+    isDefault: true
+    jsonData:
+      timeInterval: "5s"
+      tlsSkipVerify: true
+      httpHeaderName1: "Authorization"
+    secureJsonData:
+      httpHeaderValue1: "Bearer ${TOKEN}"
