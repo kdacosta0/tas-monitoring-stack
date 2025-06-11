@@ -13,12 +13,15 @@ oc whoami
 2. **RHTAS Operator**: Red Hat Trusted Artifact Signer operator must be installed  
 3. **Grafana Operator**: Grafana operator must be installed in the cluster  
 4. **OIDC Configuration**: OIDC must be configured and ready  
-5. **Securesign Deployment with Monitoring**: The following components must be deployed with monitoring enabled:  
-  - CTLog  
-  - Fulcio  
-  - Rekor  
-  - Trillian  
-  - TSA  
+5. **Securesign Deployment with Monitoring**: The following components must be deployed with monitoring enabled:
+```  
+- CTLog  
+- Fulcio  
+- Rekor  
+- Trillian  
+- TSA  
+```  
+
 
 ## Quick Start  
 
@@ -27,9 +30,11 @@ git clone https://github.com/kdacosta0/tas-monitoring-stack.git
 cd tas-monitoring-stack  
 make deploy  
 ```  
-This will deploy grafana to default namespace - `trusted-artifact-signer`.  
+This will check prerequisites deploy grafana (default namespace `trusted-artifact-signer`) and output its URL.  
+Default credentials: `admin / admin`  
 
-**Deploy to custom namespace:**:  
+**Deploy to custom namespace**:  
+
 ```bash  
 make deploy NAMESPACE=my-tas-namespace  
 ```  
@@ -38,10 +43,6 @@ make deploy NAMESPACE=my-tas-namespace
 ```bash  
 make clean  
 ```  
-
-This will output the Grafana URL  
-Default credentials: `admin / admin`  
-
 
 ## Architecture  
 
