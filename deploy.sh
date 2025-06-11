@@ -5,7 +5,7 @@
 set -e
 
 # Configuration
-NAMESPACE="trusted-artifact-signer"
+NAMESPACE="${NAMESPACE:-trusted-artifact-signer}"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 MANIFESTS_DIR="${SCRIPT_DIR}/manifests"
 

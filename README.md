@@ -1,6 +1,6 @@
 # TAS (Trusted Artifact Signer) Monitoring  
 
-Enterprise-grade monitoring solution for Red Hat Trusted Artifact Signer (RHTAS) using Grafana and Prometheus.  
+Monitoring solution for Red Hat Trusted Artifact Signer (RHTAS) using Grafana and Prometheus.  
 
 ## Prerequisites  
 
@@ -10,32 +10,36 @@ Before deploying, ensure you have:
 ```bash  
 oc whoami  
 ```  
-2. RHTAS Operator: Red Hat Trusted Artifact Signer operator must be installed  
-3. Grafana Operator: Grafana operator must be installed in the cluster  
-4. OIDC Configuration: OIDC must be configured and ready  
-5. Securesign Deployment with Monitoring: The following components must be deployed with monitoring enabled:  
-- Fulcio  
-- CTLog  
-- Rekor  
-- Trillian  
-- TSA  
+2. **RHTAS Operator**: Red Hat Trusted Artifact Signer operator must be installed  
+3. **Grafana Operator**: Grafana operator must be installed in the cluster  
+4. **OIDC Configuration**: OIDC must be configured and ready  
+5. **Securesign Deployment with Monitoring**: The following components must be deployed with monitoring enabled:  
+  - CTLog  
+  - Fulcio  
+  - Rekor  
+  - Trillian  
+  - TSA  
 
 ## Quick Start  
 
-1. Clone this repository:  
 ```bash  
 git clone https://github.com/kdacosta0/tas-monitoring-stack.git  
 cd tas-monitoring-stack  
+make deploy  
 ```  
+This will deploy grafana to default namespace - `trusted-artifact-signer`.  
 
-2. Deploy the monitoring stack:  
+**Deploy to custom namespace:**:  
 ```bash  
-./deploy.sh  
+make deploy NAMESPACE=my-tas-namespace  
 ```  
 
-3. Access Grafana:  
+**Cleanup**:
+```bash  
+make clean  
+```  
 
-The script will output the Grafana URL  
+This will output the Grafana URL  
 Default credentials: `admin / admin`  
 
 
