@@ -8,18 +8,18 @@ Before deploying, ensure you have:
 
 1. **OpenShift Cluster Access**: You must be logged into an OpenShift cluster
 ```bash
-    oc whoami
+oc whoami
 ```
 
 2. **RHTAS Operator**: Red Hat Trusted Artifact Signer operator must be installed
 ```bash
-    oc get csv -A | grep rhtas-operator
+oc get csv -A | grep rhtas-operator
 ```
 
 
 3. **Grafana Operator**: Grafana operator must be installed in the cluster
 ```bash
-    oc get csv -n openshift-operators | grep grafana-operator
+oc get csv -n openshift-operators | grep grafana-operator
 ```
 
 4. **OIDC Configuration**: OIDC must be configured and ready for your TAS deployment
@@ -33,9 +33,9 @@ Before deploying, ensure you have:
 
 ## Quick Start
 ```bash
-    git clone https://github.com/kdacosta0/tas-monitoring-stack.git
-    cd tas-monitoring-stack
-    make deploy
+git clone https://github.com/kdacosta0/tas-monitoring-stack.git
+cd tas-monitoring-stack
+make deploy
 ```
 This will:
 - Check all prerequisites
@@ -48,7 +48,7 @@ This will:
 
 ## Cleanup
 ```bash
-    make clean
+make clean
 ```
 
 ## Architecture
