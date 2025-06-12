@@ -1,7 +1,7 @@
 apiVersion: grafana.integreatly.org/v1beta1
 kind: GrafanaDashboard
 metadata:
-  name: tas-customer-kpis
+  name: tas-performance-kpis
   namespace: trusted-artifact-signer
 spec:
   instanceSelector:
@@ -10,10 +10,10 @@ spec:
   json: |
     {
       "id": null,
-      "uid": "tas-customer-kpis",
-      "title": "Trusted Artifact Signer - Enterprise Dashboard",
-      "description": "Monitoring for Trusted Artifact Signer with comprehensive KPIs",
-      "tags": ["trusted-artifact-signer", "security", "enterprise"],
+      "uid": "tas-performance-kpis",
+      "title": "TAS Performance Dashboard - KPIs",
+      "description": "Corrected performance monitoring for TAS with proper KPI calculations",
+      "tags": ["tas", "performance", "team-testing"],
       "style": "dark",
       "timezone": "browser",
       "refresh": "10s",
@@ -24,43 +24,24 @@ spec:
       "panels": [
         {
           "id": 1,
-          "title": "Signing Operations Overview",
+          "title": "Primary Business Throughput (ops/s)",
           "type": "timeseries",
+          "description": "Core business operations - certificates, audit entries, signature processing",
           "targets": [
             {
-              "expr": "sum by (job)(rate(fulcio_new_certs{namespace=\"trusted-artifact-signer\"}[15m]) or vector(0)) > 0",
+              "expr": "sum by (job)(rate(fulcio_new_certs{namespace=\"trusted-artifact-signer\"}[2m]))",
               "refId": "A",
-              "legendFormat": "{{job}}"
+              "legendFormat": "Certificates Issued - {{job}}"
             },
             {
-              "expr": "sum by (job)(rate(rekor_new_entries{namespace=\"trusted-artifact-signer\"}[15m]) or vector(0)) > 0",
+              "expr": "sum by (job)(rate(rekor_new_entries{namespace=\"trusted-artifact-signer\"}[2m]))",
               "refId": "B", 
-              "legendFormat": "{{job}}"
+              "legendFormat": "Audit Entries - {{job}}"
             },
             {
-              "expr": "sum by (job)(rate(entries_added{namespace=\"trusted-artifact-signer\"}[15m]) or vector(0)) > 0",
+              "expr": "sum by (job)(rate(entries_added{namespace=\"trusted-artifact-signer\"}[2m]))",
               "refId": "C",
-              "legendFormat": "{{job}}"
-            },
-            {
-              "expr": "sum by (job)(rate(http_reqs{namespace=\"trusted-artifact-signer\"}[15m]) or vector(0)) > 0",
-              "refId": "D",
-              "legendFormat": "{{job}}"
-            },
-            {
-              "expr": "sum by (job)(rate(log_rpc_requests{namespace=\"trusted-artifact-signer\"}[15m]) or vector(0)) > 0",
-              "refId": "E",
-              "legendFormat": "{{job}}"
-            },
-            {
-              "expr": "sum by (job)(rate(timestamp_authority_http_requests_total{namespace=\"trusted-artifact-signer\"}[15m]) or vector(0)) > 0",
-              "refId": "F",
-              "legendFormat": "{{job}}"
-            },
-            {
-              "expr": "sum(rate(fulcio_new_certs{namespace=\"trusted-artifact-signer\"}[15m]) or vector(0)) + sum(rate(rekor_new_entries{namespace=\"trusted-artifact-signer\"}[15m]) or vector(0)) + sum(rate(entries_added{namespace=\"trusted-artifact-signer\"}[15m]) or vector(0)) + sum(rate(http_reqs{namespace=\"trusted-artifact-signer\"}[15m]) or vector(0)) + sum(rate(log_rpc_requests{namespace=\"trusted-artifact-signer\"}[15m]) or vector(0)) + sum(rate(timestamp_authority_http_requests_total{namespace=\"trusted-artifact-signer\"}[15m]) or vector(0))",
-              "refId": "G",
-              "legendFormat": "Total Signing Operations"
+              "legendFormat": "Entries Processed - {{job}}"
             }
           ],
           "fieldConfig": {
@@ -70,65 +51,36 @@ spec:
                 "drawStyle": "line",
                 "lineInterpolation": "smooth",
                 "lineWidth": 3,
-                "fillOpacity": 20,
-                "gradientMode": "hue",
-                "spanNulls": false,
-                "pointSize": 6,
-                "stacking": {"mode": "none", "group": "A"},
-                "axisPlacement": "auto",
-                "axisLabel": "Operations per Second",
-                "scaleDistribution": {"type": "linear"},
-                "hideFrom": {"legend": false, "tooltip": false, "vis": false},
-                "thresholdsStyle": {"mode": "off"}
+                "fillOpacity": 15,
+                "pointSize": 5,
+                "axisLabel": "Operations per Second"
               },
               "color": {"mode": "palette-classic"},
-              "mappings": [],
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   {"color": "green", "value": null},
-                  {"color": "yellow", "value": 10},
-                  {"color": "red", "value": 100}
+                  {"color": "yellow", "value": 5},
+                  {"color": "red", "value": 20}
                 ]
               }
             },
             "overrides": [
               {
-                "matcher": {"id": "byName", "options": "Signing Certificates Issued"},
-                "properties": [
-                  {"id": "color", "value": {"mode": "fixed", "fixedColor": "blue"}},
-                  {"id": "custom.fillOpacity", "value": 20}
-                ]
+                "matcher": {"id": "byRegexp", "options": "Certificates.*"},
+                "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "blue"}}]
               },
               {
-                "matcher": {"id": "byName", "options": "Artifacts Added to Audit Trail"},
-                "properties": [
-                  {"id": "color", "value": {"mode": "fixed", "fixedColor": "green"}},
-                  {"id": "custom.fillOpacity", "value": 20}
-                ]
+                "matcher": {"id": "byRegexp", "options": "Log Entries.*"},
+                "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "green"}}]
               },
               {
-                "matcher": {"id": "byName", "options": "Signature Verifications Logged"},
-                "properties": [
-                  {"id": "color", "value": {"mode": "fixed", "fixedColor": "orange"}},
-                  {"id": "custom.fillOpacity", "value": 20}
-                ]
+                "matcher": {"id": "byRegexp", "options": "Entries Processed.*"},
+                "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "orange"}}]
               },
               {
-                "matcher": {"id": "byName", "options": "Certificate Transparency Activity"},
-                "properties": [
-                  {"id": "color", "value": {"mode": "fixed", "fixedColor": "cyan"}},
-                  {"id": "custom.fillOpacity", "value": 10}
-                ]
-              },
-              {
-                "matcher": {"id": "byName", "options": "Total Signing Operations"},
-                "properties": [
-                  {"id": "color", "value": {"mode": "fixed", "fixedColor": "purple"}},
-                  {"id": "custom.lineWidth", "value": 4},
-                  {"id": "custom.fillOpacity", "value": 0},
-                  {"id": "custom.drawStyle", "value": "line"}
-                ]
+                "matcher": {"id": "byRegexp", "options": "Timestamps.*"},
+                "properties": [{"id": "color", "value": {"mode": "fixed", "fixedColor": "purple"}}]
               }
             ]
           },
@@ -138,106 +90,84 @@ spec:
               "displayMode": "table",
               "placement": "bottom",
               "calcs": ["max", "mean", "lastNotNull"],
-              "showLegend": true,
-              "width": 300
+              "showLegend": true
             }
           },
-          "gridPos": {"h": 16, "w": 24, "x": 0, "y": 0}
+          "gridPos": {"h": 10, "w": 24, "x": 0, "y": 0}
         },
 
         {
           "id": 2,
-          "title": "CPU Usage %",
-          "type": "gauge",
-          "targets": [
-            {
-              "expr": "sum(rate(process_cpu_seconds_total{namespace=\"trusted-artifact-signer\"}[15m])) * 100",
-              "refId": "A",
-              "legendFormat": "CPU"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "unit": "percent",
-              "min": 0,
-              "max": 100,
-              "thresholds": {
-                "mode": "absolute",
-                "steps": [
-                  {"color": "green", "value": null},
-                  {"color": "yellow", "value": 60},
-                  {"color": "red", "value": 80}
-                ]
-              }
-            }
-          },
-          "options": {
-            "reduceOptions": {
-              "values": false,
-              "calcs": ["lastNotNull"],
-              "fields": ""
-            },
-            "orientation": "auto",
-            "showThresholdLabels": false,
-            "showThresholdMarkers": true
-          },
-          "gridPos": {"h": 8, "w": 6, "x": 0, "y": 13}
-        },
-
-        {
-          "id": 3,
-          "title": "CPU Usage by Component",
+          "title": "API & System Throughput (ops/s)",
           "type": "timeseries",
+          "description": "API requests, system operations, and TSA timestamp requests",
           "targets": [
             {
-              "expr": "sum by (job)(rate(process_cpu_seconds_total{namespace=\"trusted-artifact-signer\"}[15m]) * 100)",
+              "expr": "sum by (job)(rate(timestamp_authority_http_requests_total{namespace=\"trusted-artifact-signer\"}[2m]))",
               "refId": "A",
-              "legendFormat": "{{job}}"
+              "legendFormat": "TSA Requests - {{job}}"
+            },
+            {
+              "expr": "sum by (job)(rate(http_requests_total{namespace=\"trusted-artifact-signer\"}[2m]))",
+              "refId": "B",
+              "legendFormat": "HTTP Requests - {{job}}"
+            },
+            {
+              "expr": "sum by (job)(rate(grpc_server_handled_total{namespace=\"trusted-artifact-signer\"}[2m]))",
+              "refId": "C",
+              "legendFormat": "gRPC Requests - {{job}}"
+            },
+            {
+              "expr": "sum by (job)(rate(log_rpc_requests{namespace=\"trusted-artifact-signer\"}[2m]))",
+              "refId": "D",
+              "legendFormat": "Log RPC - {{job}}"
+            },
+            {
+              "expr": "sum by (job)(rate(http_reqs{namespace=\"trusted-artifact-signer\"}[2m]))",
+              "refId": "E",
+              "legendFormat": "CTLog Requests - {{job}}"
+            },
+            {
+              "expr": "sum by (job)(rate(rekor_qps_by_api{namespace=\"trusted-artifact-signer\"}[2m]))",
+              "refId": "F",
+              "legendFormat": "Rekor QPS - {{job}}"
             }
           ],
           "fieldConfig": {
             "defaults": {
-              "unit": "percent",
-              "min": 0,
+              "unit": "ops",
               "custom": {
                 "drawStyle": "line",
                 "lineInterpolation": "smooth",
-                "lineWidth": 2,
-                "fillOpacity": 0,
-                "gradientMode": "none",
-                "spanNulls": false,
-                "pointSize": 4,
-                "stacking": {"mode": "none", "group": "A"},
-                "axisPlacement": "auto",
-                "axisLabel": "CPU %",
-                "scaleDistribution": {"type": "linear"},
-                "hideFrom": {"legend": false, "tooltip": false, "vis": false},
-                "thresholdsStyle": {"mode": "off"}
-              },
-              "color": {"mode": "palette-classic"}
+                "lineWidth": 3,
+                "fillOpacity": 15,
+                "pointSize": 5,
+                "axisLabel": "Operations per Second"
+              }
             }
           },
           "options": {
             "tooltip": {"mode": "multi", "sort": "desc"},
             "legend": {
               "displayMode": "table",
-              "placement": "right",
+              "placement": "bottom",
               "calcs": ["max", "mean", "lastNotNull"],
               "showLegend": true
             }
           },
-          "gridPos": {"h": 8, "w": 18, "x": 6, "y": 13}
+          "gridPos": {"h": 16, "w": 24, "x": 0, "y": 10}
         },
 
         {
-          "id": 4,
-          "title": "Memory Usage %",
-          "type": "gauge",
+          "id": 3,
+          "title": "CPU Usage % by Component",
+          "type": "timeseries",
+          "description": "CPU utilization per TAS component",
           "targets": [
             {
-              "expr": "(sum(go_memstats_heap_alloc_bytes{namespace=\"trusted-artifact-signer\"}) / sum(go_memstats_heap_sys_bytes{namespace=\"trusted-artifact-signer\"})) * 100",
+              "expr": "sum by (job)(rate(process_cpu_seconds_total{namespace=\"trusted-artifact-signer\"}[2m])) * 100",
               "refId": "A",
-              "legendFormat": "Heap Utilization"
+              "legendFormat": "{{job}}"
             }
           ],
           "fieldConfig": {
@@ -245,33 +175,41 @@ spec:
               "unit": "percent",
               "min": 0,
               "max": 100,
+              "custom": {
+                "drawStyle": "line",
+                "lineWidth": 3,
+                "fillOpacity": 20,
+                "axisLabel": "CPU Percentage"
+              },
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  { "color": "green", "value": null },
-                  { "color": "yellow", "value": 70 },
-                  { "color": "red", "value": 90 }
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 50},
+                  {"color": "red", "value": 80}
                 ]
               }
             }
           },
           "options": {
-            "reduceOptions": {
-              "calcs": ["lastNotNull"]
-            },
-            "showThresholdMarkers": true,
-            "showThresholdLabels": false
+            "tooltip": {"mode": "multi"},
+            "legend": {
+              "displayMode": "table",
+              "placement": "right",
+              "calcs": ["max", "mean", "lastNotNull"]
+            }
           },
-          "gridPos": { "h": 8, "w": 6, "x": 0, "y": 21 }
+          "gridPos": {"h": 8, "w": 12, "x": 0, "y": 18}
         },
 
         {
-          "id": 5,
-          "title": "Memory Usage by Component",
-          "type": "timeseries",
+          "id": 4,
+          "title": "Memory Usage MB by Component",
+          "type": "timeseries", 
+          "description": "Actual memory consumption in MB",
           "targets": [
             {
-              "expr": "sum by (job)(go_memstats_heap_alloc_bytes{namespace=\"trusted-artifact-signer\"}) / 1024 / 1024",
+              "expr": "sum by (job)(process_resident_memory_bytes{namespace=\"trusted-artifact-signer\"}) / 1024 / 1024",
               "refId": "A",
               "legendFormat": "{{job}}"
             }
@@ -282,133 +220,116 @@ spec:
               "min": 0,
               "custom": {
                 "drawStyle": "line",
-                "lineInterpolation": "smooth",
                 "lineWidth": 3,
-                "fillOpacity": 20,
-                "gradientMode": "none",
-                "spanNulls": false,
-                "pointSize": 4,
-                "axisLabel": "Memory MB"
+                "fillOpacity": 15,
+                "axisLabel": "Memory (MB)"
               },
-              "color": { "mode": "palette-classic" }
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 512},
+                  {"color": "red", "value": 1024}
+                ]
+              }
             }
           },
           "options": {
-            "tooltip": { "mode": "single" },
+            "tooltip": {"mode": "multi"},
             "legend": {
-              "displayMode": "table",
+              "displayMode": "table", 
               "placement": "right",
-              "calcs": ["min", "max", "mean", "lastNotNull"],
-              "showLegend": true
+              "calcs": ["min", "max", "mean", "lastNotNull"]
             }
           },
-          "gridPos": { "h": 8, "w": 12, "x": 6, "y": 21 }
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 18}
+        },
+
+        {
+          "id": 5,
+          "title": "Overall CPU Usage",
+          "type": "gauge",
+          "description": "Total CPU usage across all TAS components",
+          "targets": [
+            {
+              "expr": "sum(rate(process_cpu_seconds_total{namespace=\"trusted-artifact-signer\"}[2m])) * 100",
+              "refId": "A",
+              "legendFormat": "Total CPU %"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "unit": "percent",
+              "min": 0,
+              "max": 200,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 100},
+                  {"color": "red", "value": 150}
+                ]
+              }
+            }
+          },
+          "gridPos": {"h": 8, "w": 6, "x": 0, "y": 26}
         },
 
         {
           "id": 6,
-          "title": "Total Memory Allocated",
-          "type": "stat",
+          "title": "Total Memory Usage",
+          "type": "gauge",
+          "description": "Total memory consumption across all components",
           "targets": [
             {
-              "expr": "sum(go_memstats_heap_alloc_bytes{namespace=\"trusted-artifact-signer\"}) / 1024 / 1024",
+              "expr": "sum(process_resident_memory_bytes{namespace=\"trusted-artifact-signer\"}) / 1024 / 1024",
               "refId": "A",
-              "legendFormat": "Total Heap"
+              "legendFormat": "Total Memory MB"
             }
           ],
           "fieldConfig": {
             "defaults": {
               "unit": "mbytes",
               "min": 0,
-              "decimals": 0,
-              "custom": {
-                "drawStyle": "area",
-                "lineInterpolation": "smooth",
-                "lineWidth": 2
-              }
-            }
-          },
-          "options": {
-            "reduceOptions": {
-              "calcs": ["lastNotNull"]
-            },
-            "orientation": "horizontal"
-          },
-          "gridPos": { "h": 8, "w": 6, "x": 18, "y": 21 }
-        },
-
-        {
-          "id": 7,
-          "title": "Service Health",
-          "type": "stat",
-          "targets": [
-            {
-              "expr": "sum(up{namespace=\"trusted-artifact-signer\"})",
-              "refId": "A",
-              "legendFormat": "Services Online"
-            },
-            {
-              "expr": "(sum(up{namespace=\"trusted-artifact-signer\"}) / count(up{namespace=\"trusted-artifact-signer\"})) * 100",
-              "refId": "B",
-              "legendFormat": "System Availability"
-            }
-          ],
-          "fieldConfig": {
-            "defaults": {
-              "color": {"mode": "thresholds"},
-              "custom": {
-                "displayMode": "basic",
-                "orientation": "horizontal"
-              },
+              "max": 1024,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
-                  {"color": "red", "value": null},
-                  {"color": "yellow", "value": 4},
-                  {"color": "green", "value": 6}
+                  {"color": "green", "value": null},
+                  {"color": "yellow", "value": 700},
+                  {"color": "red", "value": 900}
                 ]
               }
             }
           },
-          "options": {
-            "reduceOptions": {
-              "values": false,
-              "calcs": ["lastNotNull"],
-              "fields": ""
-            },
-            "orientation": "horizontal",
-            "textMode": "value_and_name",
-            "colorMode": "value",
-            "graphMode": "area",
-            "justifyMode": "center"
-          },
-          "gridPos": {"h": 6, "w": 8, "x": 0, "y": 29}
+          "gridPos": {"h": 8, "w": 6, "x": 6, "y": 26}
         },
 
         {
-          "id": 9,
-          "title": "Signing Activity Summary (Last Hour)",
+          "id": 7,
+          "title": "Performance Summary (Last 10 Minutes)",
           "type": "stat",
+          "description": "Key performance indicators over the last 10 minutes",
           "targets": [
             {
-              "expr": "sum(increase(fulcio_new_certs{namespace=\"trusted-artifact-signer\"}[1h]) or vector(0))",
+              "expr": "sum(increase(fulcio_new_certs{namespace=\"trusted-artifact-signer\"}[10m]))",
               "refId": "A",
-              "legendFormat": "Artifacts Signed"
+              "legendFormat": "Certificates Issued"
             },
             {
-              "expr": "sum(increase(rekor_new_entries{namespace=\"trusted-artifact-signer\"}[1h]) or vector(0))",
+              "expr": "sum(increase(rekor_new_entries{namespace=\"trusted-artifact-signer\"}[10m]))",
               "refId": "B",
-              "legendFormat": "Audit Trail Entries"
+              "legendFormat": "Log Entries Created"
             },
             {
-              "expr": "sum(increase(entries_added{namespace=\"trusted-artifact-signer\"}[1h]) or vector(0))",
+              "expr": "sum(increase(entries_added{namespace=\"trusted-artifact-signer\"}[10m]))",
               "refId": "C",
-              "legendFormat": "Verifications Completed"
+              "legendFormat": "Signatures Processed"
             },
             {
-              "expr": "sum(increase(http_reqs{namespace=\"trusted-artifact-signer\"}[1h]) or vector(0))",
+              "expr": "avg(rate(process_cpu_seconds_total{namespace=\"trusted-artifact-signer\"}[10m])) * 100",
               "refId": "D",
-              "legendFormat": "API Requests"
+              "legendFormat": "Avg CPU %"
             }
           ],
           "fieldConfig": {
@@ -418,62 +339,92 @@ spec:
                 "orientation": "horizontal"
               },
               "color": {"mode": "thresholds"},
-              "mappings": [],
-              "decimals": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
                   {"color": "green", "value": null},
-                  {"color": "blue", "value": 10},
-                  {"color": "orange", "value": 100},
-                  {"color": "red", "value": 1000}
+                  {"color": "yellow", "value": 50},
+                  {"color": "red", "value": 100}
                 ]
               }
             },
             "overrides": [
               {
-                "matcher": {"id": "byName", "options": "Artifacts Signed"},
+                "matcher": {"id": "byName", "options": "Certificates Issued"},
                 "properties": [
                   {"id": "color", "value": {"mode": "fixed", "fixedColor": "blue"}},
-                  {"id": "displayName", "value": "Artifacts Signed"}
+                  {"id": "unit", "value": "short"},
+                  {"id": "decimals", "value": 0}
                 ]
               },
               {
-                "matcher": {"id": "byName", "options": "Audit Trail Entries"},
+                "matcher": {"id": "byName", "options": "Log Entries Created"},
                 "properties": [
                   {"id": "color", "value": {"mode": "fixed", "fixedColor": "green"}},
-                  {"id": "displayName", "value": "Audit Trail Entries"}
+                  {"id": "unit", "value": "short"},
+                  {"id": "decimals", "value": 0}
                 ]
               },
               {
-                "matcher": {"id": "byName", "options": "Verifications Completed"},
+                "matcher": {"id": "byName", "options": "Signatures Processed"},
                 "properties": [
                   {"id": "color", "value": {"mode": "fixed", "fixedColor": "orange"}},
-                  {"id": "displayName", "value": "Verifications"}
+                  {"id": "unit", "value": "short"},
+                  {"id": "decimals", "value": 0}
                 ]
               },
               {
-                "matcher": {"id": "byName", "options": "API Requests"},
+                "matcher": {"id": "byName", "options": "Avg CPU %"},
                 "properties": [
-                  {"id": "color", "value": {"mode": "fixed", "fixedColor": "purple"}},
-                  {"id": "displayName", "value": "API Usage"}
+                  {"id": "color", "value": {"mode": "fixed", "fixedColor": "red"}},
+                  {"id": "unit", "value": "percent"},
+                  {"id": "decimals", "value": 2}
                 ]
               }
             ]
           },
           "options": {
             "reduceOptions": {
-              "values": false,
-              "calcs": ["lastNotNull"],
-              "fields": ""
+              "calcs": ["lastNotNull"]
             },
             "orientation": "vertical",
             "textMode": "value_and_name",
-            "colorMode": "value",
-            "graphMode": "area",
-            "justifyMode": "center"
+            "colorMode": "value"
           },
-          "gridPos": {"h": 6, "w": 16, "x": 8, "y": 29}
+          "gridPos": {"h": 8, "w": 12, "x": 12, "y": 26}
+        },
+
+        {
+          "id": 8,
+          "title": "Component Health Status",
+          "type": "stat",
+          "description": "Health check for all TAS components",
+          "targets": [
+            {
+              "expr": "sum(up{namespace=\"trusted-artifact-signer\"})",
+              "refId": "A",
+              "legendFormat": "Services Up"
+            },
+            {
+              "expr": "count(up{namespace=\"trusted-artifact-signer\"})",
+              "refId": "B",
+              "legendFormat": "Total Services"
+            }
+          ],
+          "fieldConfig": {
+            "defaults": {
+              "color": {"mode": "thresholds"},
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {"color": "red", "value": null},
+                  {"color": "yellow", "value": 3},
+                  {"color": "green", "value": 5}
+                ]
+              }
+            }
+          },
+          "gridPos": {"h": 4, "w": 24, "x": 0, "y": 34}
         }
       ]
     }
