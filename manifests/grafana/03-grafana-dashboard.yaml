@@ -174,7 +174,6 @@ spec:
             "defaults": {
               "unit": "percent",
               "min": 0,
-              "max": 100,
               "custom": {
                 "drawStyle": "line",
                 "lineWidth": 3,
@@ -325,11 +324,6 @@ spec:
               "expr": "sum(increase(entries_added{namespace=\"trusted-artifact-signer\"}[10m]))",
               "refId": "C",
               "legendFormat": "Signatures Processed"
-            },
-            {
-              "expr": "avg(rate(process_cpu_seconds_total{namespace=\"trusted-artifact-signer\"}[10m])) * 100",
-              "refId": "D",
-              "legendFormat": "Avg CPU %"
             }
           ],
           "fieldConfig": {
@@ -371,14 +365,6 @@ spec:
                   {"id": "color", "value": {"mode": "fixed", "fixedColor": "orange"}},
                   {"id": "unit", "value": "short"},
                   {"id": "decimals", "value": 0}
-                ]
-              },
-              {
-                "matcher": {"id": "byName", "options": "Avg CPU %"},
-                "properties": [
-                  {"id": "color", "value": {"mode": "fixed", "fixedColor": "red"}},
-                  {"id": "unit", "value": "percent"},
-                  {"id": "decimals", "value": 2}
                 ]
               }
             ]
