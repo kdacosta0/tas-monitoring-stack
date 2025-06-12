@@ -5,7 +5,7 @@
 set -e
 
 # Configuration
-NAMESPACE="${NAMESPACE:-trusted-artifact-signer}"
+NAMESPACE="trusted-artifact-signer"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 MANIFESTS_DIR="${SCRIPT_DIR}/manifests"
 
@@ -33,7 +33,12 @@ oc apply -f "${MANIFESTS_DIR}/rbac/grafana-serviceaccount.yaml"
 oc adm policy add-cluster-role-to-user cluster-monitoring-view -z grafana-reader -n $NAMESPACE
 
 # Generate token
-TOKEN=$(oc create token grafana-reader -n $NAMESPACE --duration=8760h)
+TOKEN=$(oc create token grafana-reader -n $NAMESPACE --duration=720h)
+
+if [ -z "$TOKEN" ]; then
+    echo -e "${RED}ERROR: Failed to generate token${NC}"
+    exit 1
+fi
 
 # Step 3: Deploy Grafana instance
 echo ""
@@ -70,6 +75,10 @@ echo ""
 echo -e "${BLUE}Access your dashboard:${NC}"
 echo "   URL: https://$GRAFANA_URL"
 echo "   Login: admin / admin"
+echo ""
+echo -e "${YELLOW}Security reminders:${NC}"
+echo -e "   • Token expires in 30 hours - redeploy when needed"
+echo -e "   • Change default Grafana admin password"
 echo ""
 
 # Show monitoring status if there were missing monitors
