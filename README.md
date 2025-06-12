@@ -108,13 +108,3 @@ oc exec -n trusted-artifact-signer deployment/tas-grafana-deployment -- \
     curl -k -H "Authorization: Bearer $(oc create token grafana-reader -n trusted-artifact-signer)" \
     https://prometheus-k8s.openshift-monitoring.svc.cluster.local:9091/api/v1/query?query=up
 ```
-
-## Performance Testing Integration
-
-This monitoring stack is designed to work seamlessly with TAS performance testing:
-
-- **Real-time Metrics**: 10-second refresh for active testing
-- **Performance KPIs**: Tracks signatures/second, resource usage, and bottlenecks
-- **Component Breakdown**: Identifies which component becomes the bottleneck
-- **Resource Planning**: Provides data for capacity planning decisions
-
