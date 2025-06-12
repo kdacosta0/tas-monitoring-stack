@@ -24,12 +24,12 @@ oc get csv -n openshift-operators | grep grafana-operator
 
 4. **OIDC Configuration**: OIDC must be configured and ready for your TAS deployment
 
-5. **Securesign Deployment with Monitoring**: All TAS components must be deployed with monitoring enabled:
-- **fulcio** (Certificate Authority)
-- **rekor** (Transparency Log)  
-- **trillian** (Backend Database)
-- **ctlog** (Certificate Transparency)
-- **tsa** (Timestamp Authority)
+5. **Securesign Deployment with Monitoring**: All TAS components must be deployed in the `trusted-artifact-signer` namespace with monitoring enabled:
+    - **fulcio**
+    - **rekor**
+    - **trillian**
+    - **ctlog**
+    - **tsa**
 
 ## Quick Start
 ```bash
@@ -52,6 +52,10 @@ make clean
 ```
 
 ## Architecture
+
+The dashboard consists of:
+
+![Dashboard panels overview](images/grafana-dashboard.png)
 
 ### **Dashboard Panels**
 1. **Primary Business Throughput** - Core signing operations (certificates, entries, processing)
