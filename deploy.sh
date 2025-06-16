@@ -77,7 +77,7 @@ echo "   URL: https://$GRAFANA_URL"
 echo "   Login: admin / admin"
 echo ""
 echo -e "${YELLOW}Security reminders:${NC}"
-echo -e "   • Token expires in 30 hours - redeploy when needed"
+echo -e "   • Token expires in 30 days - redeploy when needed"
 echo -e "   • Change default Grafana admin password"
 echo ""
 
